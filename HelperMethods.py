@@ -16,7 +16,7 @@ def reviewToDict(*args):
             if(isString == False):
                 item = sanitise(item.contents)
                 if item == "[]":
-                    item = "(((EmptyField)))"
+                    item = "null"
                 values.append(item)
         if len(values) != 0:
             dictize = {key : values}
