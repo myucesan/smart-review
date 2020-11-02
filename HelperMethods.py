@@ -4,6 +4,7 @@ from textblob import TextBlob
 import pandas as pd
 from langdetect import detect_langs
 from sqlalchemy import create_engine # pip install mysqlclient in order for sqlalchemy to use mysql drivers
+from contextlib import closing
 
 
 def sanitise(data):
@@ -62,9 +63,30 @@ def detectScore(df):
     lala = df["score_rate"] = pd.DataFrame.from_dict(score_rate)
     return lala
 
-def storeTable(df, tableName):
-    # SQL Connection
-    engine = create_engine("mysql://deprak1q_deds:uibUzlt0]sqZ@depraktischewinkel.nl/deprak1q_deds_ass1")
-    connection = engine.connect()
 
-    df.to_sql(tableName, engine)
+# SQL Connection
+# engine = create_engine("mysql://deprak1q_deds:uibUzlt0]sqZ@depraktischewinkel.nl/deprak1q_deds_ass1")
+
+
+def storeTable(df, tableName):
+    engine = create_engine("mysql://deprak1q_deds2:RGDjD@%n[M&u@depraktischewinkel.nl/deprak1q_deds_ass1")
+    connection = engine.connect()
+    df.to_sql(tableName, engine, if_exists='fail')
+    connection.close()
+
+def query(procedureName, limito):
+    engine = create_engine("mysql://deprak1q_deds2:RGDjD@%n[M&u@depraktischewinkel.nl/deprak1q_deds_ass1")
+    connection = engine.connect()
+    results = []
+    connection = engine.raw_connection()
+    try:
+        print("trying")
+        cursor = connection.cursor()
+        limit = [limito]
+        cursor.callproc(procedureName, (limit))
+        results = list(cursor.fetchall())
+        cursor.close()
+        connection.commit()
+    finally:
+        connection.close()
+    return results
